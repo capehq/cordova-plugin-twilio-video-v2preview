@@ -218,9 +218,9 @@
 - (void)room:(TVIRoom *)room participantDidDisconnect:(TVIParticipant *)participant {
     // [self logMessage:[NSString stringWithFormat:@"Room %@ participant %@ disconnected", room.name, participant.identity]];
     if (self.participant == participant) {
-		[self logMessage:@"Participant disconnected"];
+        [self logMessage:@"Participant disconnected"];
         [self cleanupRemoteParticipant];
-		[self dismissViewControllerAnimated:true completion:nil];
+        [self dismissViewControllerAnimated:true completion:nil];
     }
 }
 
