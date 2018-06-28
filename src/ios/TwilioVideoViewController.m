@@ -58,9 +58,9 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-
+    
     // Lock to landscape orientation.
-
+    
     [[UIDevice currentDevice] setValue:
      [NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft]
                                 forKey:@"orientation"];
@@ -91,7 +91,7 @@
         //   [self logMessage:@"Please provide a valid token to connect to a room"];
         return;
     }
-
+    
     TVIConnectOptions *connectOptions = [TVIConnectOptions optionsWithToken:self.accessToken
                                                                       block:^(TVIConnectOptionsBuilder * _Nonnull builder) {
                                                                           
@@ -182,16 +182,20 @@
     // [self logMessage:[NSString stringWithFormat:@"Connected to room %@ as %@", room.name, room.localParticipant.identity]];
     [self logMessage:@"Waiting on participant to join"];
     self.messageLabel.text = self.remoteParticipantName;
-    if (room.participants.count > 0) {
-        self.participant = room.participants[0];
-        self.participant.delegate = self;
-        [self logMessage:@" "];
+    for (TVIParticipant* participant in room.participants)
+    {
+        if ([participant.videoTracks count] > 0) {
+            self.participant = participant;
+            self.participant.delegate = self;
+            [self logMessage:@" "];
+        }
     }
 }
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
     // [self logMessage:[NSString stringWithFormat:@"Disconncted from room %@, error = %@", room.name, error]];
     
+    // will be awesome to send this case to loggly
     [self cleanupRemoteParticipant];
     self.room = nil;
     
@@ -207,7 +211,7 @@
 }
 
 - (void)room:(TVIRoom *)room participantDidConnect:(TVIParticipant *)participant {
-    if (!self.participant) {
+    if (!self.participant && [participant.videoTracks count] > 0) {
         self.participant = participant;
         self.participant.delegate = self;
     }
@@ -216,12 +220,13 @@
 }
 
 - (void)room:(TVIRoom *)room participantDidDisconnect:(TVIParticipant *)participant {
-    if (self.participant == participant) {
+    if ([self.participant.sid isEqualToString:participant.sid]) {
         [self cleanupRemoteParticipant];
+        
+        // [self logMessage:[NSString stringWithFormat:@"Room %@ participant %@ disconnected", room.name, participant.identity]];
+        [self logMessage:@"Participant disconnected"];
+        [self dismissViewControllerAnimated:true completion:nil];
     }
-    // [self logMessage:[NSString stringWithFormat:@"Room %@ participant %@ disconnected", room.name, participant.identity]];
-    [self logMessage:@"Participant disconnected"];
-    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 #pragma mark - TVIParticipantDelegate
@@ -229,7 +234,7 @@
 - (void)participant:(TVIParticipant *)participant addedVideoTrack:(TVIVideoTrack *)videoTrack {
     //   [self logMessage:[NSString stringWithFormat:@"Participant %@ added video track.", participant.identity]];
     
-    if (self.participant == participant) {
+    if ([self.participant.sid isEqualToString:participant.sid]) {
         [self setupRemoteView];
         [videoTrack addRenderer:self.remoteView];
     }
@@ -238,7 +243,7 @@
 - (void)participant:(TVIParticipant *)participant removedVideoTrack:(TVIVideoTrack *)videoTrack {
     //   [self logMessage:[NSString stringWithFormat:@"Participant %@ removed video track.", participant.identity]];
     
-    if (self.participant == participant) {
+    if ([self.participant.sid isEqualToString:participant.sid]) {
         [videoTrack removeRenderer:self.remoteView];
         [self.remoteView removeFromSuperview];
     }
