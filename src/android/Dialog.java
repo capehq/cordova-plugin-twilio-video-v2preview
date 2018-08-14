@@ -1,4 +1,4 @@
-package com.anvay.twiliovideocall;
+package com.cape.twiliovideocall;
 
 import android.content.Context;
 import android.content.DialogInterface;
