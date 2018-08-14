@@ -283,6 +283,7 @@ public class ConversationActivity extends AppCompatActivity
                     configureAudio(false);
                     moveLocalVideoToPrimaryView();
                 }
+                finish();
             }
 
             @Override
@@ -293,6 +294,7 @@ public class ConversationActivity extends AppCompatActivity
             @Override
             public void onParticipantDisconnected(Room room, RemoteParticipant remoteParticipant) {
                 removeParticipant(remoteParticipant);
+                finish();
             }
 
             @Override
@@ -402,7 +404,14 @@ public class ConversationActivity extends AppCompatActivity
 
             @Override
             public void onVideoTrackDisabled(RemoteParticipant remoteParticipant, RemoteVideoTrackPublication remoteVideoTrackPublication) {
-
+                /*
+                 * Disconnect from room
+                 */
+                if (room != null) {
+                    room.disconnect();
+                    disconnectedFromOnDestroy = true;
+                }
+                finish();
             }
 
         };
