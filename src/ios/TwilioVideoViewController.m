@@ -42,6 +42,8 @@
 @property (nonatomic, weak) IBOutlet UIButton *disconnectButton;
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 
+@property (nonatomic, assign) BOOL tappedVideoView;
+
 @end
 
 @implementation TwilioVideoViewController
@@ -56,6 +58,11 @@
     
     // Configure access token manually for testing, if desired! Create one manually in the console
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
+    
+    self.tappedVideoView = NO;
+    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
+    [self.view addGestureRecognizer:singleTapGestureRecognizer];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -68,6 +75,17 @@
 }
 
 #pragma mark - Public
+
+-(void)handleSingleTapGesture:(UITapGestureRecognizer *)tapGestureRecognizer{
+    if (self.tappedVideoView == NO) {
+        self.disconnectButton.hidden = YES;
+        self.tappedVideoView = YES;
+    } else {
+        self.disconnectButton.hidden = NO;
+        self.tappedVideoView = NO;
+    }
+    
+}
 
 - (void)connectToRoom:(NSString*)room {
     [self showRoomUI:YES];
