@@ -75,23 +75,28 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.disconnectButton.layer removeAllAnimations];
     if (!self.tappedVideoView) {
-        self.tappedVideoView = !self.tappedVideoView;
         [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
             self.disconnectButton.userInteractionEnabled = YES;
             self.disconnectButton.layer.opacity = 0.1f;
         } completion: nil];
     } else {
-        self.tappedVideoView = !self.tappedVideoView;
         [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
             self.disconnectButton.userInteractionEnabled = YES;
             self.disconnectButton.layer.opacity = 1.0f;
         } completion: ^(BOOL finished) {
-            [UIView animateWithDuration:0.4 delay:6 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-                self.disconnectButton.userInteractionEnabled = YES;
-                self.disconnectButton.layer.opacity = 0.1f;
-            } completion: nil];
+            if (finished) {
+                [UIView animateWithDuration:0.4 delay:6 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                    self.disconnectButton.userInteractionEnabled = YES;
+                    self.disconnectButton.layer.opacity = 0.1f;
+                } completion: ^(BOOL finished) {
+                    if (finished) {
+                        self.tappedVideoView = !self.tappedVideoView;
+                    }
+                }];
+            }
         }];
     }
+    self.tappedVideoView = !self.tappedVideoView;
 }
 
 #pragma mark - Public
