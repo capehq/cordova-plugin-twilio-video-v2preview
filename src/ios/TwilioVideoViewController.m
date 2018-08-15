@@ -77,13 +77,20 @@
 #pragma mark - Public
 
 -(void)handleSingleTapGesture:(UITapGestureRecognizer *)tapGestureRecognizer{
-    if (self.tappedVideoView == NO) {
-        self.disconnectButton.hidden = YES;
-        self.tappedVideoView = YES;
+    if (!self.tappedVideoView) {
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
+            self.disconnectButton.transform = CGAffineTransformMakeScale(0.001, 0.001);
+        } completion: nil];
     } else {
-        self.disconnectButton.hidden = NO;
-        self.tappedVideoView = NO;
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
+            self.disconnectButton.transform = CGAffineTransformMakeScale(0.95, 0.95);
+        } completion: ^(BOOL finished) {
+            [UIView animateWithDuration:0 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
+                self.disconnectButton.transform = CGAffineTransformMakeScale(1, 1);
+            } completion: nil];
+        }];
     }
+    self.tappedVideoView = !self.tappedVideoView;
     
 }
 
