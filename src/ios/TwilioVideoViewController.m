@@ -83,7 +83,7 @@
         } completion: nil];
     } else {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-            self.disconnectButton.transform = CGAffineTransformMakeScale(0.95, 0.95);
+            self.disconnectButton.transform = CGAffineTransformMakeScale(0.99, 0.99);
         } completion: ^(BOOL finished) {
             [UIView animateWithDuration:0 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
                 self.disconnectButton.transform = CGAffineTransformMakeScale(1, 1);
