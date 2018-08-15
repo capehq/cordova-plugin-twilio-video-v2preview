@@ -46,7 +46,7 @@
         <hook type="after_plugin_install" src="hooks/after_plugin_install/hook-add-r-import.js" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="VideoConversationPlugin">
-                <param name="android-package" value="com.anvay.twiliovideocall.VideoConversationPlugin" />
+                <param name="android-package" value="com.cape.twiliovideocall.VideoConversationPlugin" />
             </feature>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/*">
@@ -62,14 +62,14 @@
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity 
-                android:name="com.anvay.twiliovideocall.ConversationActivity"
+                android:name="com.cape.twiliovideocall.ConversationActivity"
                 android:configChanges="orientation|screenSize" 
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             </activity>
         </config-file>
-        <source-file src="src/android/VideoConversationPlugin.java" target-dir="src/com/anvay/twiliovideocall" />
-        <source-file src="src/android/ConversationActivity.java" target-dir="src/com/anvay/twiliovideocall" />
-        <source-file src="src/android/Dialog.java" target-dir="src/com/anvay/twiliovideocall" />
+        <source-file src="src/android/VideoConversationPlugin.java" target-dir="src/com/cape/twiliovideocall" />
+        <source-file src="src/android/ConversationActivity.java" target-dir="src/com/cape/twiliovideocall" />
+        <source-file src="src/android/Dialog.java" target-dir="src/com/cape/twiliovideocall" />
         <framework src="src/android/twiliovideo.gradle" custom="true" type="gradleReference" />
         
         <resource-file src="src/android/res/drawable/ic_call_black_24dp.xml" target="res/drawable/ic_call_black_24dp.xml" />
