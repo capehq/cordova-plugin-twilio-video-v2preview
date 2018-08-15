@@ -60,8 +60,6 @@
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
     
     self.tappedVideoView = NO;
-    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
-    [self.view addGestureRecognizer:singleTapGestureRecognizer];
     
 }
 
@@ -74,26 +72,30 @@
                                 forKey:@"orientation"];
 }
 
-#pragma mark - Public
-
--(void)handleSingleTapGesture:(UITapGestureRecognizer *)tapGestureRecognizer{
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.disconnectButton.layer removeAllAnimations];
     if (!self.tappedVideoView) {
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-            self.disconnectButton.transform = CGAffineTransformMakeScale(0.001, 0.001);
+        self.tappedVideoView = !self.tappedVideoView;
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+            self.disconnectButton.userInteractionEnabled = YES;
+            self.disconnectButton.layer.opacity = 0.1f;
         } completion: nil];
     } else {
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-            self.disconnectButton.transform = CGAffineTransformMakeScale(0.99, 0.99);
+        self.tappedVideoView = !self.tappedVideoView;
+        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+            self.disconnectButton.userInteractionEnabled = YES;
+            self.disconnectButton.layer.opacity = 1.0f;
         } completion: ^(BOOL finished) {
-            [UIView animateWithDuration:0 delay:0 options:UIViewAnimationOptionCurveLinear  animations:^{
-                self.disconnectButton.transform = CGAffineTransformMakeScale(1, 1);
+            [UIView animateWithDuration:0.4 delay:6 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+                self.disconnectButton.userInteractionEnabled = YES;
+                self.disconnectButton.layer.opacity = 0.1f;
             } completion: nil];
         }];
     }
-    self.tappedVideoView = !self.tappedVideoView;
-    
 }
 
+#pragma mark - Public
+    
 - (void)connectToRoom:(NSString*)room {
     [self showRoomUI:YES];
     
