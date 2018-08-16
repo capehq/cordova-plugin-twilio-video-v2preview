@@ -42,9 +42,13 @@
 @property (nonatomic, weak) IBOutlet UIButton *disconnectButton;
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 
+@property (nonatomic, assign) NSTimer *timer;
+
 @end
 
 @implementation TwilioVideoViewController
+const double ANIMATION_DURATION = 0.4;
+const double TIMER_INTERVAL = 4;
 @synthesize delegate;
 
 #pragma mark - UIViewController
@@ -56,6 +60,9 @@
     
     // Configure access token manually for testing, if desired! Create one manually in the console
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
+
+    [self startTimer];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -67,8 +74,44 @@
                                 forKey:@"orientation"];
 }
 
-#pragma mark - Public
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    if(self.disconnectButton.hidden) {
+        self.disconnectButton.hidden = !self.disconnectButton.hidden;
+        [self showDisconnectButton];
+        [self startTimer];
+    } else {
+        [self resetTimer];
+    }
+}
 
+-(void)hideDisconnectButton {
+    [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+        self.disconnectButton.layer.opacity = 0.0f;
+    } completion: ^(BOOL finished) {
+        if(finished) {
+            self.disconnectButton.hidden = !self.disconnectButton.hidden;
+        }
+    }];
+}
+
+-(void)showDisconnectButton {
+    [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+        self.disconnectButton.layer.opacity = 1.0f;
+    } completion: nil];
+}
+
+-(void)startTimer {
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
+}
+
+-(void)resetTimer {
+    [self.timer invalidate];
+    self.timer = nil;
+    [self startTimer];
+}
+
+#pragma mark - Public
+    
 - (void)connectToRoom:(NSString*)room {
     [self showRoomUI:YES];
     
