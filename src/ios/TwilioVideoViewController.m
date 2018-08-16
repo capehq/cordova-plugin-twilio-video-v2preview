@@ -45,6 +45,7 @@
 @end
 
 @implementation TwilioVideoViewController
+@synthesize delegate;
 
 #pragma mark - UIViewController
 
@@ -81,7 +82,7 @@
 
 - (IBAction)disconnectButtonPressed:(id)sender {
     [self.room disconnect];
-    [self dismissViewControllerAnimated:true completion:nil];
+    [self.delegate dismiss];
 }
 
 #pragma mark - Private
@@ -195,7 +196,7 @@
     self.room = nil;
     
     [self showRoomUI:NO];
-    [self dismissViewControllerAnimated:true completion:nil];
+    [self.delegate dismiss];
 }
 
 - (void)room:(TVIRoom *)room didFailToConnectWithError:(nonnull NSError *)error{
@@ -204,7 +205,7 @@
     self.room = nil;
     
     [self showRoomUI:NO];
-    [self dismissViewControllerAnimated:true completion:nil];
+    [self.delegate dismiss];
 }
 
 - (void)room:(TVIRoom *)room participantDidConnect:(TVIParticipant *)participant {
@@ -217,7 +218,7 @@
     if (self.viewedParticipant == participant) {
         [self logMessage:@"Participant disconnected"];
         [self cleanupRemoteParticipant];
-        [self dismissViewControllerAnimated:true completion:nil];
+        [self.delegate dismiss];
     }
 }
 
@@ -241,7 +242,7 @@
         [videoTrack removeRenderer:self.remoteView];
         [self.remoteView removeFromSuperview];
         [self cleanupRemoteParticipant];
-        [self dismissViewControllerAnimated:true completion:nil];
+        [self.delegate dismiss];
 		// TODO: This will kick us out....some ideas:
 		//  1. Search for another participant with a video track (requires saving all participants or tracking in addedVideoTrack)
     }

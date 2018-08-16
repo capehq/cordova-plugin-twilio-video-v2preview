@@ -6,8 +6,12 @@
 
 @import UIKit;
 
-@interface TwilioVideoViewController : UIViewController
+@protocol TwilioVideoViewControllerDelegate <NSObject>
+-(void)dismiss;
+@end
 
+@interface TwilioVideoViewController : UIViewController
+@property (assign) id <TwilioVideoViewControllerDelegate> delegate;
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSString *remoteParticipantName;
 
