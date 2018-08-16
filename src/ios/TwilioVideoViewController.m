@@ -42,7 +42,8 @@
 @property (nonatomic, weak) IBOutlet UIButton *disconnectButton;
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 
-@property (nonatomic, assign) BOOL tappedVideoView;
+@property (nonatomic, assign) NSTimer *timer;
+@property (nonatomic, assign) BOOL disconnectButtonVisible;
 
 @end
 
@@ -58,8 +59,10 @@
     
     // Configure access token manually for testing, if desired! Create one manually in the console
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
-    
-    self.tappedVideoView = NO;
+
+//    self.timer = [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
+    self.disconnectButtonVisible = YES;
+    [self startTimer];
     
 }
 
@@ -73,30 +76,41 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self.disconnectButton.layer removeAllAnimations];
-    if (!self.tappedVideoView) {
-        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-            self.disconnectButton.userInteractionEnabled = YES;
-            self.disconnectButton.layer.opacity = 0.1f;
-        } completion: nil];
+    if(!self.disconnectButtonVisible) {
+        self.disconnectButtonVisible = !self.disconnectButtonVisible;
+        [self showDisconnectButton];
+        [self startTimer];
     } else {
-        [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-            self.disconnectButton.userInteractionEnabled = YES;
-            self.disconnectButton.layer.opacity = 1.0f;
-        } completion: ^(BOOL finished) {
-            if (finished) {
-                [UIView animateWithDuration:0.4 delay:6 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-                    self.disconnectButton.userInteractionEnabled = YES;
-                    self.disconnectButton.layer.opacity = 0.1f;
-                } completion: ^(BOOL finished) {
-                    if (finished) {
-                        self.tappedVideoView = !self.tappedVideoView;
-                    }
-                }];
-            }
-        }];
+        [self resetTimer];
     }
-    self.tappedVideoView = !self.tappedVideoView;
+}
+
+-(void)hideDisconnectButton {
+    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+        self.disconnectButton.userInteractionEnabled = YES;
+        self.disconnectButton.layer.opacity = 0.01f;
+    } completion: ^(BOOL finished) {
+        if(finished) {
+            self.disconnectButtonVisible = !self.disconnectButtonVisible;
+        }
+    }];
+}
+
+-(void)showDisconnectButton {
+    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+        self.disconnectButton.userInteractionEnabled = YES;
+        self.disconnectButton.layer.opacity = 1.0f;
+    } completion: nil];
+}
+
+-(void)startTimer {
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
+}
+
+-(void)resetTimer {
+    [self.timer invalidate];
+    self.timer = nil;
+    [self startTimer];
 }
 
 #pragma mark - Public
