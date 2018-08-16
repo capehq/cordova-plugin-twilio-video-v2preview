@@ -40,6 +40,7 @@
 - (void) dismissTwilioVideoController {
     [self.viewController dismissViewControllerAnimated: YES completion: ^ {
         if (self.callbackId != nil) {
+            NSString * cbid = self.callbackId;
             self.callbackId = nil;
             CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsString:@"closed"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:cbid];
