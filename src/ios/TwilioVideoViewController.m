@@ -43,7 +43,6 @@
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 
 @property (nonatomic, assign) NSTimer *timer;
-@property (nonatomic, assign) BOOL disconnectButtonVisible;
 
 @end
 
@@ -60,7 +59,6 @@
     // Configure access token manually for testing, if desired! Create one manually in the console
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
 
-    self.disconnectButtonVisible = YES;
     [self startTimer];
     
 }
@@ -75,8 +73,8 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if(!self.disconnectButtonVisible) {
-        self.disconnectButtonVisible = !self.disconnectButtonVisible;
+    if(self.disconnectButton.hidden) {
+        self.disconnectButton.hidden = !self.disconnectButton.hidden;
         [self showDisconnectButton];
         [self startTimer];
     } else {
@@ -89,7 +87,7 @@
         self.disconnectButton.layer.opacity = 0.0f;
     } completion: ^(BOOL finished) {
         if(finished) {
-            self.disconnectButtonVisible = !self.disconnectButtonVisible;
+            self.disconnectButton.hidden = !self.disconnectButton.hidden;
         }
     }];
 }
