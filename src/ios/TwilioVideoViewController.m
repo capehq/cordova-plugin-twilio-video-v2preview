@@ -60,7 +60,6 @@
     // Configure access token manually for testing, if desired! Create one manually in the console
     //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
 
-//    self.timer = [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
     self.disconnectButtonVisible = YES;
     [self startTimer];
     
