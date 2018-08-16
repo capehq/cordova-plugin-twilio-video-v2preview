@@ -47,6 +47,8 @@
 @end
 
 @implementation TwilioVideoViewController
+const double ANIMATION_DURATION = 0.4;
+const double TIMER_INTERVAL = 4;
 @synthesize delegate;
 
 #pragma mark - UIViewController
@@ -83,7 +85,7 @@
 }
 
 -(void)hideDisconnectButton {
-    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+    [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         self.disconnectButton.layer.opacity = 0.0f;
     } completion: ^(BOOL finished) {
         if(finished) {
@@ -93,13 +95,13 @@
 }
 
 -(void)showDisconnectButton {
-    [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+    [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         self.disconnectButton.layer.opacity = 1.0f;
     } completion: nil];
 }
 
 -(void)startTimer {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
 }
 
 -(void)resetTimer {
