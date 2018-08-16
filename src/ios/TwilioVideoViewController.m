@@ -88,7 +88,7 @@
 -(void)hideDisconnectButton {
     [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
         self.disconnectButton.userInteractionEnabled = YES;
-        self.disconnectButton.layer.opacity = 0.01f;
+        self.disconnectButton.layer.opacity = 0.0f;
     } completion: ^(BOOL finished) {
         if(finished) {
             self.disconnectButtonVisible = !self.disconnectButtonVisible;
