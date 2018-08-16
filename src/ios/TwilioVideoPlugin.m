@@ -29,7 +29,7 @@
         
         [self.viewController presentViewController:vc animated:YES completion:^{
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"opened"];
-            [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+            [pluginResult setKeepCallbackAsBool:YES];
             [vc connectToRoom:room];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
         }];
@@ -40,7 +40,6 @@
 - (void) dismissTwilioVideoController {
     [self.viewController dismissViewControllerAnimated: YES completion: ^ {
         if (self.callbackId != nil) {
-            NSString * cbid = [self.callbackId copy];
             self.callbackId = nil;
             CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsString:@"closed"];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:cbid];
