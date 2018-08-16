@@ -103,7 +103,7 @@
 }
 
 -(void)startTimer {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(hideDisconnectButton) userInfo:nil repeats:NO];
 }
 
 -(void)resetTimer {
