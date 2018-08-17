@@ -93,7 +93,7 @@ public class VideoConversationPlugin extends CordovaPlugin {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if(resultCode == -1){
+        if(resultCode == Activity.RESULT_OK){
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "closed");
             this.callbackContext.sendPluginResult(pluginResult);
         }
