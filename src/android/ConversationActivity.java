@@ -179,6 +179,11 @@ public class ConversationActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    private void dismiss() {
+        setResult(RESULT_OK, new Intent());
+        finish();
+    }
+
     private void connectToRoom(String roomName) {
         MediaCodecVideoEncoder.disableVp8HwCodec();
         MediaCodecVideoEncoder.disableVp9HwCodec();
@@ -283,7 +288,7 @@ public class ConversationActivity extends AppCompatActivity
                     configureAudio(false);
                     moveLocalVideoToPrimaryView();
                 }
-                finish();
+                dismiss();
             }
 
             @Override
@@ -294,7 +299,7 @@ public class ConversationActivity extends AppCompatActivity
             @Override
             public void onParticipantDisconnected(Room room, RemoteParticipant remoteParticipant) {
                 removeParticipant(remoteParticipant);
-                finish();
+                dismiss();
             }
 
             @Override
@@ -364,7 +369,7 @@ public class ConversationActivity extends AppCompatActivity
                     room.disconnect();
                     disconnectedFromOnDestroy = true;
                 }
-                finish();
+                dismiss();
             }
 
             @Override
@@ -411,7 +416,7 @@ public class ConversationActivity extends AppCompatActivity
                     room.disconnect();
                     disconnectedFromOnDestroy = true;
                 }
-                finish();
+                dismiss();
             }
 
         };
@@ -428,7 +433,7 @@ public class ConversationActivity extends AppCompatActivity
                     room.disconnect();
 					disconnectedFromOnDestroy = true;
                 }
-                finish();
+                dismiss();
             }
         };
     }
