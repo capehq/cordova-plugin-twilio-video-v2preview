@@ -62,6 +62,9 @@ public class VideoConversationPlugin extends CordovaPlugin {
                     intentTwilioVideo.putExtra("token", token);
                     intentTwilioVideo.putExtra("roomId", roomId);
                     intentTwilioVideo.putExtra("remoteName", remoteParticipantName);
+                    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "opened");
+                    pluginResult.setKeepCallback(true);
+                    callbackContext.sendPluginResult(pluginResult);
                     that.cordova.startActivityForResult(that, intentTwilioVideo, 0);
                 }
                     
@@ -85,5 +88,14 @@ public class VideoConversationPlugin extends CordovaPlugin {
         this.roomId = state.getString("roomId");
         this.remoteParticipantName = state.getString("remoteName");
         this.callbackContext = callbackContext;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(resultCode == -1){
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "closed");
+            this.callbackContext.sendPluginResult(pluginResult);
+        }
     }
 }
