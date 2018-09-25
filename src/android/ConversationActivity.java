@@ -68,6 +68,7 @@ public class ConversationActivity extends AppCompatActivity
      */
     private Room room;
     private LocalParticipant localParticipant;
+    private RemoteParticipant viewedParticipant;
 
     /*
      * A VideoView receives frames from a local or remote video track and renders them
@@ -206,7 +207,7 @@ public class ConversationActivity extends AppCompatActivity
         disconnectActionFab.show();
         disconnectActionFab.setOnClickListener(disconnectClickListener());
     }
-
+    
     /*
      * Called when participant joins the room
      */
@@ -299,7 +300,9 @@ public class ConversationActivity extends AppCompatActivity
             @Override
             public void onParticipantDisconnected(Room room, RemoteParticipant remoteParticipant) {
                 removeParticipant(remoteParticipant);
-                dismiss();
+                if (remoteParticipant == viewedParticipant) { 
+                    dismiss();
+                }
             }
 
             @Override
@@ -356,6 +359,7 @@ public class ConversationActivity extends AppCompatActivity
 
             @Override
             public void onVideoTrackSubscribed(RemoteParticipant remoteParticipant, RemoteVideoTrackPublication remoteVideoTrackPublication, RemoteVideoTrack remoteVideoTrack) {
+                viewedParticipant = remoteParticipant;
                 addParticipantVideo(remoteVideoTrack);
             }
 
@@ -369,7 +373,10 @@ public class ConversationActivity extends AppCompatActivity
                     room.disconnect();
                     disconnectedFromOnDestroy = true;
                 }
-                dismiss();
+                if (remoteParticipant == viewedParticipant) {
+                    viewedParticipant = null;
+                    dismiss();
+                }
             }
 
             @Override
@@ -416,7 +423,9 @@ public class ConversationActivity extends AppCompatActivity
                     room.disconnect();
                     disconnectedFromOnDestroy = true;
                 }
-                dismiss();
+                if (remoteParticipant == viewedParticipant) {
+                    dismiss();
+                }
             }
 
         };
