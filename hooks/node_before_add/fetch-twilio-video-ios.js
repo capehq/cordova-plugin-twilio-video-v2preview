@@ -3,6 +3,7 @@ var https = require('https');
 var fs = require('fs');
 var decompress = require('decompress');
 var decompressTarbz = require('decompress-tarbz2');
+const exec = require('child_process').exec;
 
 function getFile(url, path, cb) {
     var http_or_https = http;
@@ -45,6 +46,16 @@ getFile('https://media.twiliocdn.com/sdk/ios/video/releases/1.3.9/twilio-video-i
         ]
     }).then(() => {
         fs.unlink('twilio-video-ios.tar.bz2');
-    });
+    }).then(() => {
+		const child = exec('VALID_ARCHS="armv7 arm64" sh src/ios/frameworks/twilio-video-ios/TwilioVideo.framework/remove_archs',
+						   (error, stdout, stderr) => {
+							   console.log(`stdout: ${stdout}`);
+							   console.log(`stderr: ${stderr}`);
+							   if (error !== null) {
+								   console.log(`exec error: ${error}`);
+							   }
+						   });
+	})
   }
 });
+
