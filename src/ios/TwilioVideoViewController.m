@@ -42,13 +42,15 @@
 @property (nonatomic, weak) IBOutlet UIButton *disconnectButton;
 @property (nonatomic, weak) IBOutlet UILabel *messageLabel;
 
-@property (nonatomic, assign) NSTimer *timer;
+// CS-69: Weak timer or else we get a crash on invalidate
+@property (nonatomic, weak) NSTimer *timer;
 
 @end
 
 @implementation TwilioVideoViewController
 const double ANIMATION_DURATION = 0.4;
 const double TIMER_INTERVAL = 4;
+const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscapeRight;
 @synthesize delegate;
 
 #pragma mark - UIViewController
@@ -57,21 +59,27 @@ const double TIMER_INTERVAL = 4;
     [super viewDidLoad];
     
     [self logMessage:[NSString stringWithFormat:@"TwilioVideo v%@", [TwilioVideo version]]];
-    
-    // Configure access token manually for testing, if desired! Create one manually in the console
-    //  self.accessToken = @"TWILIO_ACCESS_TOKEN";
-
-    [self startTimer];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 
     // Lock to landscape orientation.
+    UIInterfaceOrientation orientation = UIDevice.currentDevice.orientation;
+    if (!UIInterfaceOrientationIsLandscape(orientation)) {
+        orientation = defaultOrientation;
+    }
+    [[UIDevice currentDevice] setValue: [NSNumber numberWithInteger: orientation] forKey:@"orientation"];
 
-    [[UIDevice currentDevice] setValue:
-     [NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft]
-                                forKey:@"orientation"];
+    // Start icon timer
+    [self startTimer];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+	
+    // Stop any timer
+    [self stopTimer];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -105,10 +113,14 @@ const double TIMER_INTERVAL = 4;
 }
 
 -(void)resetTimer {
-    [self.timer invalidate];
-    self.timer = nil;
+    [self stopTimer];
     [self startTimer];
 }
+
+-(void)stopTimer {
+    [self.timer invalidate];
+    self.timer = nil;
+}  
 
 #pragma mark - Public
     
@@ -124,6 +136,7 @@ const double TIMER_INTERVAL = 4;
 }
 
 - (IBAction)disconnectButtonPressed:(id)sender {
+    [self stopTimer];
     [self.room disconnect];
     [self.delegate dismiss];
 }
@@ -271,7 +284,7 @@ const double TIMER_INTERVAL = 4;
     //   [self logMessage:[NSString stringWithFormat:@"Participant %@ added video track.", participant.identity]];
   
     if (self.viewedParticipant != participant) {
-		[self cleanupRemoteParticipant];
+        [self cleanupRemoteParticipant];
         self.viewedParticipant = participant;
         [self setupRemoteView];
         [videoTrack addRenderer:self.remoteView];
@@ -286,8 +299,8 @@ const double TIMER_INTERVAL = 4;
         [self.remoteView removeFromSuperview];
         [self cleanupRemoteParticipant];
         [self.delegate dismiss];
-		// TODO: This will kick us out....some ideas:
-		//  1. Search for another participant with a video track (requires saving all participants or tracking in addedVideoTrack)
+        // TODO: This will kick us out....some ideas:
+        //  1. Search for another participant with a video track (requires saving all participants or tracking in addedVideoTrack)
     }
 }
 
