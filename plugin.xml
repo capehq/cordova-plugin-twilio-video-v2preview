@@ -25,6 +25,7 @@
         <header-file src="src/ios/TwilioVideoViewController.h" />
         <resource-file src="src/ios/Resources/TwilioVideo.storyboard" target="Resources/TwilioVideo.storyboard" />
         <resource-file src="src/ios/Resources/disconnect.png" target="Resources/disconnect.png" />
+        <resource-file src="scripts/strip-unwanted-architectures.sh" target="Scripts/strip-unwanted-architectures.sh" />
         <preference name="CAMERA_USAGE_DESCRIPTION" default="Camera" />
         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
             <string>$CAMERA_USAGE_DESCRIPTION</string>

@@ -29,8 +29,9 @@ module.exports = {
         var xcodeProject = xcode.project(xcodeProjectPath);
         xcodeProject.parseSync();
 
-        // Build the body of the script to be executed during the build phase.
-        var script = '"' + '\\"${SRCROOT}\\"' + "/\\\"" + utilities.getAppName(context) + "\\\"/Plugins/" + plugin + "/" + framework + "/remove_archs" + '"';
+		// Note this is a generic "strip all shared frameworks", not just ours.
+		// You have been warned.
+        var script = "$SRCROOT/$PRODUCT_NAME/Resources/Scripts/strip-unwanted-architectures.sh"
 
         // Generate a unique ID for our new build phase.
         var id = xcodeProject.generateUuid();
@@ -65,12 +66,11 @@ module.exports = {
                 value: id,
                 comment: comment
             });
+			console.log(comment + " build phase added to target " + nativeTarget.name)
         }
 
         // Finally, write the .pbxproj back out to disk.
         fs.writeFileSync(xcodeProjectPath, xcodeProject.writeSync());
-
-		console.log(comment + " build phase added")
     },
 
     /**

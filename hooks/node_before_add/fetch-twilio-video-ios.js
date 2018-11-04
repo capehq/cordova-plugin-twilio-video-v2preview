@@ -52,6 +52,7 @@ function getFile(url, path, cb) {
 
 getFile('https://media.twiliocdn.com/sdk/ios/video/releases/1.3.9/twilio-video-ios-1.3.9.tar.bz2', 'twilio-video-ios.tar.bz2', function(err) {
   if (err === null) {
+	console.log("Decompressing...")
     decompress('twilio-video-ios.tar.bz2', 'src/ios/frameworks', {
         plugins: [
             decompressTarbz()
