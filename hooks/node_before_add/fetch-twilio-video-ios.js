@@ -1,7 +1,5 @@
 var http = require('http');
 var https = require('https');
-var URL = require('url');
-var PATH = require('path');
 var fs = require('fs');
 var decompress = require('decompress');
 var decompressTarbz = require('decompress-tarbz2');
@@ -12,16 +10,6 @@ function getFile(url, path, cb) {
     if (/^https:\/\//.test(url)) {
         http_or_https = https;
     }
-	if (fs.existsSync(path)) {
-		console.log("Found local file, using")
-		return;
-	}
-	var filename = PATH.basename(URL.parse(url).pathname)
-	if (fs.existsSync(filename)) {
-		console.log("Found local file, renaming")
-		fs.rename(filename, path)
-		return;
-	}
     http_or_https.get(url, function(response) {
         var headers = JSON.stringify(response.headers);
         switch(response.statusCode) {
