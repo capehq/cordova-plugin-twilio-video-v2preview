@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin 
     id="cordova-plugin-twilio-video-v2preview"
-    version="1.0.8"
+    version="1.1.0"
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Twilio video conversation plugin</name>
@@ -13,6 +13,8 @@
         <engine name="cordova" version=">=4.5.3" />
     </engines>
     <platform name="ios">
+        <hook type="after_plugin_install" src="hooks/after_plugin_install/hook-trim-twilio-video-framework.js" />
+        <hook type="before_plugin_uninstall" src="hooks/before_plugin_rm/hook-rm-twilio-video-trim.js" />
         <config-file parent="/*" target="config.xml">
             <feature name="VideoConversationPlugin">
                 <param name="ios-package" value="TwilioVideoPlugin" />

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6",
+  "version": "1.1.0",
   "name": "cordova-plugin-twilio-video-v2preview",
   "cordova_name": "Twilio video room plugin",
   "license": "Apache 2.0",
