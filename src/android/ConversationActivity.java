@@ -190,7 +190,8 @@ public class ConversationActivity extends AppCompatActivity
         MediaCodecVideoEncoder.disableVp9HwCodec();
         MediaCodecVideoDecoder.disableVp8HwCodec();
         MediaCodecVideoDecoder.disableVp9HwCodec();
-        configureAudio(true);
+// CS-73: Cape Spectator currently doesn't deal with audio at all, so don't muck with it        
+//        configureAudio(true);
         ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(accessToken)
                 .roomName(roomName);
 
@@ -276,7 +277,8 @@ public class ConversationActivity extends AppCompatActivity
 
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
-                configureAudio(false);
+// CS-73: Cape Spectator currently doesn't deal with audio at all, so don't muck with it        
+//                configureAudio(false);
                 Log.e(TAG,"Failed to connect to " + room.getName(), e);
             }
 
@@ -286,7 +288,8 @@ public class ConversationActivity extends AppCompatActivity
                 ConversationActivity.this.room = null;
                 // Only reinitialize the UI if disconnect was not called from onDestroy()
                 if (!disconnectedFromOnDestroy) {
-                    configureAudio(false);
+// CS-73: Cape Spectator currently doesn't deal with audio at all, so don't muck with it        
+//                    configureAudio(false);
                     moveLocalVideoToPrimaryView();
                 }
                 dismiss();
