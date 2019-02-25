@@ -351,6 +351,10 @@ public class ConversationActivity extends AppCompatActivity
             }
 
             @Override
+            public void onAudioTrackSubscriptionFailed(RemoteParticipant remoteParticipant, RemoteAudioTrackPublication remoteAudioTrackPublication, TwilioException twilioException) {
+            }
+            
+            @Override
             public void onVideoTrackPublished(RemoteParticipant remoteParticipant, RemoteVideoTrackPublication remoteVideoTrackPublication) {
 
             }
@@ -381,6 +385,11 @@ public class ConversationActivity extends AppCompatActivity
                     dismiss();
                 }
             }
+            
+            @Override
+            public void onVideoTrackSubscriptionFailed(RemoteParticipant remoteParticipant, RemoteVideoTrackPublication remoteVideoTrackPublication, TwilioException twilioException) {
+
+            }
 
             @Override
             public void onDataTrackPublished(RemoteParticipant remoteParticipant, RemoteDataTrackPublication remoteDataTrackPublication) {
@@ -400,6 +409,11 @@ public class ConversationActivity extends AppCompatActivity
             @Override
             public void onDataTrackUnsubscribed(RemoteParticipant remoteParticipant, RemoteDataTrackPublication remoteDataTrackPublication, RemoteDataTrack remoteDataTrack) {
 
+            }
+            
+            @Override
+            public void onDataTrackSubscriptionFailed(RemoteParticipant remoteParticipant, RemoteDataTrackPublication remoteDataTrackPublication, TwilioException twilioException) {
+                
             }
 
             @Override
