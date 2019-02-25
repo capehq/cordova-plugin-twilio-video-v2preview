@@ -1,5 +1,6 @@
 /********* TwilioVideo.m Cordova Plugin Implementation *******/
 
+@import TwilioVideo;
 #import <Cordova/CDV.h>
 #import "TwilioVideoViewController.h"
 
@@ -37,6 +38,11 @@
 
 }
 
+- (void)getTwilioVersion:(CDVInvokedUrlCommand*)command {
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[TwilioVideo version]];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void) dismissTwilioVideoController {
     [self.viewController dismissViewControllerAnimated: YES completion: ^ {
         if (self.callbackId != nil) {
@@ -50,6 +56,30 @@
 
 -(void) dismiss {
     [self dismissTwilioVideoController];
+}
+
+-(void) onConnected:(NSString *)participantId participantSid:(NSString *)participantSid
+{
+  NSDictionary *dict = @{
+	@"event": @"onConnected",
+	@"participantId": participantId,
+	@"participantSid": participantSid,
+  };
+  CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsDictionary:dict];
+  [pluginResult setKeepCallbackAsBool:YES];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+}
+
+-(void) onDisconnected:(NSString *)participantId participantSid:(NSString *)participantSid
+{
+  NSDictionary *dict = @{
+	@"event": @"onDisconnected",
+	@"participantId": participantId,
+	@"participantSid": participantSid,
+  };
+  CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsDictionary:dict];
+  [pluginResult setKeepCallbackAsBool:YES];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
 
 @end

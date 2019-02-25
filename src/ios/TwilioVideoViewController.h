@@ -8,6 +8,8 @@
 
 @protocol TwilioVideoViewControllerDelegate <NSObject>
 -(void)dismiss;
+-(void)onConnected:(NSString *)participantId participantSid:(NSString *)participantSid;
+-(void)onDisconnected:(NSString *)participantId participantSid:(NSString *)participantSid;
 @end
 
 @interface TwilioVideoViewController : UIViewController

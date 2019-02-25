@@ -222,6 +222,7 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
             [self.remoteView removeFromSuperview];
         }
         self.viewedParticipant = nil;
+		[self.delegate onDisconnected:self.room.localParticipant.identity participantSid:self.room.localParticipant.sid];
     }
 }
 
@@ -243,6 +244,7 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     for (TVIParticipant* participant in room.participants) {
         participant.delegate = self;
     }
+    [self.delegate onConnected:room.localParticipant.identity participantSid:room.localParticipant.sid];
 }
 
 - (void)room:(TVIRoom *)room didDisconnectWithError:(nullable NSError *)error {
