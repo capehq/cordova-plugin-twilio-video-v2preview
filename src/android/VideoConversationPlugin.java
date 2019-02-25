@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.twilio.video.Video;
 
 public class VideoConversationPlugin extends CordovaPlugin {
 
@@ -39,6 +40,10 @@ public class VideoConversationPlugin extends CordovaPlugin {
 		if (action.equals("open")) {
 		   	this.openRoom(args);
 		}
+        if (action.equals("getTwilioVersion")) {
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, Video.getVersion());
+            this.callbackContext.sendPluginResult(pluginResult);
+        }
         return true;
 	}
 
