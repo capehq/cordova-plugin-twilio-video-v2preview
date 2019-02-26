@@ -27,11 +27,11 @@
 
 @end
 
-@interface TwilioVideoViewController () <UITextFieldDelegate, TVIParticipantDelegate, TVIRoomDelegate, TVIVideoViewDelegate, TVICameraCapturerDelegate>
+@interface TwilioVideoViewController () <UITextFieldDelegate, TVIRemoteParticipantDelegate, TVIRoomDelegate, TVIVideoViewDelegate>
 
 #pragma mark Video SDK components
 
-@property (nonatomic, strong) TVIParticipant *viewedParticipant;
+@property (nonatomic, strong) TVIRemoteParticipant *viewedParticipant;
 @property (nonatomic, weak) TVIVideoView *remoteView;
 @property (nonatomic, strong) TVIRoom *room;
 
@@ -65,7 +65,7 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     [super viewDidAppear:animated];
 
     // Lock to landscape orientation.
-    UIInterfaceOrientation orientation = UIDevice.currentDevice.orientation;
+    UIInterfaceOrientation orientation = (UIInterfaceOrientation)UIDevice.currentDevice.orientation;
     if (!UIInterfaceOrientationIsLandscape(orientation)) {
         orientation = defaultOrientation;
     }
@@ -218,7 +218,7 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
 - (void)cleanupRemoteParticipant {
     if (self.viewedParticipant) {
         if ([self.viewedParticipant.videoTracks count] > 0) {
-            [self.viewedParticipant.videoTracks[0] removeRenderer:self.remoteView];
+            [self.viewedParticipant.videoTracks[0].videoTrack removeRenderer:self.remoteView];
             [self.remoteView removeFromSuperview];
         }
         self.viewedParticipant = nil;
@@ -241,7 +241,7 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     [self logMessage:@"Waiting on participant to join"];
     self.messageLabel.text = self.remoteParticipantName;
     self.viewedParticipant = nil;
-    for (TVIParticipant* participant in room.participants) {
+    for (TVIRemoteParticipant* participant in room.remoteParticipants) {
         participant.delegate = self;
     }
     [self.delegate onConnected:room.localParticipant.identity participantSid:room.localParticipant.sid];
@@ -266,12 +266,12 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     [self.delegate dismiss];
 }
 
-- (void)room:(TVIRoom *)room participantDidConnect:(TVIParticipant *)participant {
+- (void)room:(TVIRoom *)room participantDidConnect:(TVIRemoteParticipant *)participant {
     participant.delegate = self;
     //   [self logMessage:[NSString stringWithFormat:@"Room %@ participant %@ connected", room.name, participant.identity]];
 }
 
-- (void)room:(TVIRoom *)room participantDidDisconnect:(TVIParticipant *)participant {
+- (void)room:(TVIRoom *)room participantDidDisconnect:(TVIRemoteParticipant *)participant {
     // [self logMessage:[NSString stringWithFormat:@"Room %@ participant %@ disconnected", room.name, participant.identity]];
     if (self.viewedParticipant == participant) {
         [self logMessage:@"Participant disconnected"];
@@ -280,10 +280,10 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     }
 }
 
-#pragma mark - TVIParticipantDelegate
+#pragma mark - TVIRemoteParticipantDelegate
 
-- (void)participant:(TVIParticipant *)participant addedVideoTrack:(TVIVideoTrack *)videoTrack {
-    //   [self logMessage:[NSString stringWithFormat:@"Participant %@ added video track.", participant.identity]];
+- (void)subscribedToVideoTrack:(nonnull TVIRemoteVideoTrack *)videoTrack publication:(nonnull TVIRemoteVideoTrackPublication *)publication forParticipant:(nonnull TVIRemoteParticipant *)participant {
+    //   [self logMessage:[NSString stringWithFormat:@"Participant %@ subscribed to video track.", participant.identity]];
   
     if (self.viewedParticipant != participant) {
         [self cleanupRemoteParticipant];
@@ -293,8 +293,8 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     }
 }
 
-- (void)participant:(TVIParticipant *)participant removedVideoTrack:(TVIVideoTrack *)videoTrack {
-    //   [self logMessage:[NSString stringWithFormat:@"Participant %@ removed video track.", participant.identity]];
+- (void)unsubscribedFromVideoTrack:(nonnull TVIRemoteVideoTrack *)videoTrack publication:(nonnull TVIRemoteVideoTrackPublication *)publication forParticipant:(nonnull TVIRemoteParticipant *)participant {
+    //   [self logMessage:[NSString stringWithFormat:@"Participant %@ unsubscribed from video track.", participant.identity]];
     
     if (self.viewedParticipant == participant) {
         [videoTrack removeRenderer:self.remoteView];
@@ -304,34 +304,6 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
         // TODO: This will kick us out....some ideas:
         //  1. Search for another participant with a video track (requires saving all participants or tracking in addedVideoTrack)
     }
-}
-
-- (void)participant:(TVIParticipant *)participant addedAudioTrack:(TVIAudioTrack *)audioTrack {
-    //  [self logMessage:[NSString stringWithFormat:@"Participant %@ added audio track.", participant.identity]];
-}
-
-- (void)participant:(TVIParticipant *)participant removedAudioTrack:(TVIAudioTrack *)audioTrack {
-    //  [self logMessage:[NSString stringWithFormat:@"Participant %@ removed audio track.", participant.identity]];
-}
-
-- (void)participant:(TVIParticipant *)participant enabledTrack:(TVITrack *)track {
-    NSString *type = @"";
-    if ([track isKindOfClass:[TVIAudioTrack class]]) {
-        type = @"audio";
-    } else {
-        type = @"video";
-    }
-    //  [self logMessage:[NSString stringWithFormat:@"Participant %@ enabled %@ track.", participant.identity, type]];
-}
-
-- (void)participant:(TVIParticipant *)participant disabledTrack:(TVITrack *)track {
-    NSString *type = @"";
-    if ([track isKindOfClass:[TVIAudioTrack class]]) {
-        type = @"audio";
-    } else {
-        type = @"video";
-    }
-    //  [self logMessage:[NSString stringWithFormat:@"Participant %@ disabled %@ track.", participant.identity, type]];
 }
 
 #pragma mark - TVIVideoViewDelegate

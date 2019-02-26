@@ -2,7 +2,6 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var decompress = require('decompress');
-var decompressTarbz = require('decompress-tarbz2');
 const exec = require('child_process').exec;
 
 function getFile(url, path, cb) {
@@ -13,40 +12,46 @@ function getFile(url, path, cb) {
     http_or_https.get(url, function(response) {
         var headers = JSON.stringify(response.headers);
         switch(response.statusCode) {
-            case 200:
-                var file = fs.createWriteStream(path);
-                response.on('data', function(chunk){
-                    file.write(chunk);
-                }).on('end', function(){
-                    file.end();
-                    cb(null);
-                });
-                break;
-            case 301:
-            case 302:
-            case 303:
-            case 307:
-                getFile('https://media.twiliocdn.com' + response.headers.location, path, cb);
-                break;
-            default:
-                cb(new Error('Server responded with status code ' + response.statusCode));
+        case 200:
+            var file = fs.createWriteStream(path);
+            response.on('data', function(chunk){
+//				process.stdout.write('.');
+                file.write(chunk);
+            }).on('end', function(){
+                file.end();
+                cb(null);
+//				process.stdout.write('\n');
+            });
+            break;
+        case 301:
+        case 302:
+        case 303:
+        case 307:
+//			console.log('Redirecting to ' + response.headers.location)
+            getFile(response.headers.location, path, cb);
+            break;
+        default:
+            cb(new Error('Server responded with status code ' + response.statusCode));
         }
 
     })
-    .on('error', function(err) {
-        cb(err);
-    });
+		.on('error', function(err) {
+			cb(err);
+		});
 }
 
-getFile('https://media.twiliocdn.com/sdk/ios/video/releases/1.3.9/twilio-video-ios-1.3.9.tar.bz2', 'twilio-video-ios.tar.bz2', function(err) {
-  if (err === null) {
-	console.log("Decompressing...")
-    decompress('twilio-video-ios.tar.bz2', 'src/ios/frameworks', {
-        plugins: [
-            decompressTarbz()
-        ]
-    }).then(() => {
-        fs.unlink('twilio-video-ios.tar.bz2');
-    })
-  }
+var filename = 'TwilioVideo.framework'
+var dest_dir = 'src/ios/frameworks'
+var dest = dest_dir + '/' + filename
+
+console.log("Fetching " + filename);
+
+if (!fs.existsSync(dest_dir)) {
+	fs.mkdirSync(dest_dir);
+}
+getFile('https://github.com/twilio/twilio-video-ios/releases/download/2.7.0/TwilioVideo.framework.zip', dest + '.zip', function(err) {
+	if (err === null) {
+		console.log("Decompressing " + dest + ".zip")
+		decompress(dest + '.zip', dest_dir)
+	}
 });
