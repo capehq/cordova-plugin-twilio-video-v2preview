@@ -28,7 +28,7 @@ final class TwilioStats: Encodable, Equatable {
     public let timestamp: Double
     public var region: TwilioRegion? // Region of the Twilio room
 
-    public var localVideo: TVILocalVideoTrackStats?
+    public var remoteVideo: TVIRemoteVideoTrackStats?
     public var candidatePair: TVIIceCandidatePairStats?
     public var localCandidate: TVIIceCandidateStats?
     public var remoteCandidate: TVIIceCandidateStats?
@@ -36,9 +36,8 @@ final class TwilioStats: Encodable, Equatable {
 
     // Stats for lastest sample period
     public var samplePeriod: Double?
-    public var bpsSent: UInt?
+    public var bpsReceived: UInt?
     public var packetLossRatio: Double? // packetsLost : packetsSent -- for latest sample period only
-    public var fpsEncoded: Double?
 
     /**
      - parameters:
@@ -50,12 +49,12 @@ final class TwilioStats: Encodable, Equatable {
     public init(current: TVIStatsReport, previous: TVIStatsReport?, ignoreCandidates: Set<String>?) {
         peerConnectionId = current.peerConnectionId
 
-        localVideo = current.localVideoTrackStats.first
-        if current.localVideoTrackStats.count > 1 {
-            NSLog("Only reporting first local video track out of \(current.localVideoTrackStats.count)")
+        remoteVideo = current.remoteVideoTrackStats.first
+        if current.remoteVideoTrackStats.count > 1 {
+            NSLog("Only reporting first remote video track out of \(current.remoteVideoTrackStats.count)")
         }
 
-        timestamp = localVideo?.timestamp ?? NSDate().timeIntervalSince1970
+        timestamp = remoteVideo?.timestamp ?? NSDate().timeIntervalSince1970
 
         for pair in current.iceCandidatePairStats where pair.isActiveCandidatePair {
             candidatePair = pair
@@ -106,8 +105,8 @@ final class TwilioStats: Encodable, Equatable {
     private func calcDiffStats(current: TVIStatsReport, previous: TVIStatsReport?) {
         guard let previous = previous else { return }
 
-        guard let currTrackStats = current.localVideoTrackStats.first,
-            let prevTrackStats = previous.localVideoTrackStats.first else { return }
+        guard let currTrackStats = current.remoteVideoTrackStats.first,
+            let prevTrackStats = previous.remoteVideoTrackStats.first else { return }
 
         let tDelta: Double = (currTrackStats.timestamp - prevTrackStats.timestamp) / 1000 // milliseconds -> seconds
 
@@ -117,17 +116,15 @@ final class TwilioStats: Encodable, Equatable {
         }
 
         samplePeriod = tDelta
-        bpsSent = UInt(( Double(currTrackStats.bytesSent - prevTrackStats.bytesSent) / tDelta ) * 8)
+        bpsReceived = UInt(( Double(currTrackStats.bytesReceived - prevTrackStats.bytesReceived) / tDelta ) * 8)
 
-        let packetsSentDelta = Double(currTrackStats.packetsSent - prevTrackStats.packetsSent)
-        if !packetsSentDelta.isZero, packetsSentDelta > 0.0 {
+        let packetsReceivedDelta = Double(currTrackStats.packetsReceived - prevTrackStats.packetsReceived)
+        if !packetsReceivedDelta.isZero, packetsReceivedDelta > 0.0 {
             // Explicit isZero check because we had a paranoia-inducing crash here despite the > 0 check.
-            packetLossRatio = Double(currTrackStats.packetsLost - prevTrackStats.packetsLost) / packetsSentDelta
+            packetLossRatio = Double(currTrackStats.packetsLost - prevTrackStats.packetsLost) / packetsReceivedDelta
         } else {
             packetLossRatio = 0.0
         }
-
-        fpsEncoded = Double(currTrackStats.framesEncoded - prevTrackStats.framesEncoded) / tDelta
     }
 
     public static func == (lhs: TwilioStats, rhs: TwilioStats) -> Bool {
@@ -141,7 +138,7 @@ final class TwilioStats: Encodable, Equatable {
 // "Implementation of 'Encodable' cannot be automatically synthesized in an extension in a different file to the type"
 // Since we shouldn't alter Twilio's SDK files, we write the encode function ourselves.
 
-extension TVILocalVideoTrackStats: Encodable {
+extension TVIRemoteVideoTrackStats: Encodable {
     enum CodingKeys: CodingKey {
         // From TVIBaseTrackStats
         case codec
@@ -150,17 +147,13 @@ extension TVILocalVideoTrackStats: Encodable {
         case timestamp
         case trackSid
 
-        // From TVILocalTrackStats
-        case bytesSent
-        case packetsSent
-        case roundTripTime
+        // From TVIRemoteTrackStats
+        case bytesReceived
+        case packetsReceived
 
-        // From TCILocalVideoTrackStats
-        case captureDimensions
-        case captureFrameRate
+        // From TCIRemoteVideoTrackStats
         case dimensions
         case frameRate
-        case framesEncoded
     }
 
     enum VideoDimensionKeys: CodingKey {
@@ -177,23 +170,16 @@ extension TVILocalVideoTrackStats: Encodable {
         try container.encodeIfPresent(timestamp, forKey: .timestamp)
         try container.encodeIfPresent(trackSid, forKey: .trackSid)
 
-        // From TVILocalTrackStats
-        try container.encodeIfPresent(bytesSent, forKey: .bytesSent)
-        try container.encodeIfPresent(packetsSent, forKey: .packetsSent)
-        try container.encodeIfPresent(roundTripTime, forKey: .roundTripTime)
+        // From TVIRemoteTrackStats
+        try container.encodeIfPresent(bytesReceived, forKey: .bytesReceived)
+        try container.encodeIfPresent(packetsReceived, forKey: .packetsReceived)
 
-        // From TCILocalVideoTrackStats
-        var captureDimensionsContainer = container.nestedContainer(keyedBy: VideoDimensionKeys.self, forKey: .captureDimensions)
-        try captureDimensionsContainer.encode(captureDimensions.width, forKey: .width)
-        try captureDimensionsContainer.encode(captureDimensions.height, forKey: .height)
-
+        // From TCIRemoteVideoTrackStats
         var dimensionsContainer = container.nestedContainer(keyedBy: VideoDimensionKeys.self, forKey: .dimensions)
         try dimensionsContainer.encode(dimensions.width, forKey: .width)
         try dimensionsContainer.encode(dimensions.height, forKey: .height)
 
-        try container.encodeIfPresent(captureFrameRate, forKey: .captureFrameRate)
         try container.encodeIfPresent(frameRate, forKey: .frameRate)
-        try container.encodeIfPresent(framesEncoded, forKey: .framesEncoded)
     }
 }
 
@@ -333,12 +319,12 @@ extension TVIIceCandidateStats: Encodable {
 extension TVIStatsReport: Encodable {
     enum CodingKeys: CodingKey {
         case peerConnectionId
-        case localVideoTrackStats
+        case remoteVideoTrackStats
         case iceCandidatePairStats
         case iceCandidateStats
 
         // ignoring:
-        // localAudioTrackStats -- not using audio at this time
+        // remoteAudioTrackStats -- not using audio at this time
         // remoteAudioTrackStats -- not using audio at this time
         // remoteVideoTrackStats -- we expect to be the only ones providing a video track
 
@@ -347,7 +333,7 @@ extension TVIStatsReport: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(peerConnectionId, forKey: .peerConnectionId)
-        try container.encodeIfPresent(localVideoTrackStats, forKey: .localVideoTrackStats)
+        try container.encodeIfPresent(remoteVideoTrackStats, forKey: .remoteVideoTrackStats)
         try container.encodeIfPresent(iceCandidatePairStats, forKey: .iceCandidatePairStats)
         try container.encodeIfPresent(iceCandidateStats, forKey: .iceCandidateStats)
     }
