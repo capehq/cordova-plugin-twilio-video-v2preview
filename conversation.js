@@ -20,6 +20,15 @@ var conversations = {
       'getTwilioVersion',
       []
 	);		  
+  },
+  getTwilioStats: function(cb) {
+	cordova.exec(
+	  cb,
+	  null,
+	  PLUGIN_NAME,
+      'getTwilioStats',
+      []
+	);		  
   }
 };
 

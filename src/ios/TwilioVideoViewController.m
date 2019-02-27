@@ -6,8 +6,7 @@
 
 @import TwilioVideo;
 #import "TwilioVideoViewController.h"
-
-
+#import "Spectator-Swift.h"
 #import <Foundation/Foundation.h>
 
 @interface PlatformUtils : NSObject
@@ -244,6 +243,8 @@ const UIInterfaceOrientation defaultOrientation = UIInterfaceOrientationLandscap
     for (TVIRemoteParticipant* participant in room.remoteParticipants) {
         participant.delegate = self;
     }
+    [TwilioMonitor setWithRoom:room];
+
     [self.delegate onConnected:room.localParticipant.identity participantSid:room.localParticipant.sid];
 }
 

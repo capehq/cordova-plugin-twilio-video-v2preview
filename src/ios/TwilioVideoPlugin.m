@@ -1,6 +1,7 @@
 /********* TwilioVideo.m Cordova Plugin Implementation *******/
 
 @import TwilioVideo;
+#import "Spectator-Swift.h"
 #import <Cordova/CDV.h>
 #import "TwilioVideoViewController.h"
 
@@ -41,6 +42,14 @@
 - (void)getTwilioVersion:(CDVInvokedUrlCommand*)command {
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[TwilioVideo version]];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getTwilioStats:(CDVInvokedUrlCommand*)command {
+    [TwilioMonitor getStatsWithCompletion:^(NSDictionary *stats) {
+		NSLog(@"Stats: %@", stats);
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:stats];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 - (void) dismissTwilioVideoController {
