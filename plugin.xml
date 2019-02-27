@@ -15,15 +15,14 @@
     <platform name="ios">
         <hook type="after_plugin_install" src="hooks/after_plugin_install/hook-trim-twilio-video-framework.js" />
         <hook type="before_plugin_uninstall" src="hooks/before_plugin_rm/hook-rm-twilio-video-trim.js" />
+        <dependency id="cordova-plugin-add-swift-support" version="1.7.2"/>
         <config-file parent="/*" target="config.xml">
             <feature name="VideoConversationPlugin">
                 <param name="ios-package" value="TwilioVideoPlugin" />
             </feature>
         </config-file>
-        <source-file src="src/ios/TwilioVideoPlugin.m" />
-        <source-file src="src/ios/TwilioVideoViewController.m" />
-        <header-file src="src/ios/TwilioVideoViewController.h" />
-        <dependency id="cordova-plugin-add-swift-support" version="1.7.2"/>
+        <source-file src="src/ios/TwilioVideoPlugin.swift" />
+        <source-file src="src/ios/TwilioVideoViewController.swift" />
         <source-file src="src/ios/TwilioMonitor.swift" />
         <source-file src="src/ios/TwilioStats.swift" />
         <source-file src="src/ios/TwilioUtils.swift" />
